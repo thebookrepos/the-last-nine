@@ -1,0 +1,26 @@
+# Envoy cluster config: the mechanical resilience layer,
+# uniform by policy
+clusters:
+  - name: fraud-service
+    connect_timeout: 0.25s
+    circuit_breakers:
+      thresholds:
+        - priority: DEFAULT
+          max_connections: 200
+          # the bounded queue, enforced
+          max_pending_requests: 100
+          # bulkhead: in-flight cap
+          max_requests: 200
+          # fleet-wide retry concurrency cap
+          max_retries: 20
+    outlier_detection:
+      consecutive_5xx: 5
+      interval: 10s
+      base_ejection_time: 30s
+      # never eject past half the fleet: a safety net when
+      # "everyone looks bad" means the problem is us
+      max_ejection_percent: 50
+    typed_extension_protocol_options:
+      envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
+        common_http_protocol_options:
+          idle_timeout: 60s

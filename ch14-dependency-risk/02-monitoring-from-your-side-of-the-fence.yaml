@@ -1,0 +1,23 @@
+# Per-dependency SLI, the ch 9 pattern applied outward
+- record: dep:fraud_api:sli:rate5m
+  expr: |
+    sum(rate(dependency_requests_total{dep="fraud-api",
+             outcome=~"success"}[5m]))
+    / sum(rate(dependency_requests_total{
+                dep="fraud-api"}[5m]))
+
+# The register's observed_sli_90d field, computed,
+# not estimated:
+- record: dep:fraud_api:sli:90d
+  expr: avg_over_time(dep:fraud_api:sli:rate5m[90d])
+
+# Ticket when the observed number drifts below the
+# contracted one:
+- alert: DepSLABreachTrend
+  expr: dep:fraud_api:sli:90d < 0.999   # their published SLA
+  labels: { severity: ticket }
+  annotations:
+    summary: >-
+      fraud-api observed 90d SLI below contracted SLA:
+      evidence for the vendor review, and a quadrant
+      re-check

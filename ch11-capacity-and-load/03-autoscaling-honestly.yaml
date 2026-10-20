@@ -1,0 +1,34 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: { name: checkout }
+spec:
+  scaleTargetRef:
+    { apiVersion: apps/v1, kind: Deployment, name: checkout }
+  # NOT 2: the six-replica zone floor, doubled as the spike
+  # bridge. Never scale below the zone math or the knee
+  # headroom.
+  minReplicas: 12
+  # Ceiling exists: 60 pods x 8 DB connections = 480, under
+  # the database's 500. An uncapped HPA can scale you into
+  # a downstream collapse or a cloud limit.
+  maxReplicas: 60
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0     # react fast upward
+      policies:
+        - { type: Percent, value: 50, periodSeconds: 60 }
+    scaleDown:
+      # descend slowly: flapping burns budget twice, and a
+      # too-eager descent meets the next burst with
+      # yesterday's fleet
+      stabilizationWindowSeconds: 600
+      policies:
+        - { type: Percent, value: 10, periodSeconds: 120 }
+  metrics:
+    - type: Pods
+      pods:
+        # a saturation signal, not CPU: CPU lags and lies for
+        # IO-bound services. Scale on the dimension that
+        # actually binds.
+        metric: { name: inflight_requests_per_pod }
+        target: { type: AverageValue, averageValue: "80" }

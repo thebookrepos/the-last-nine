@@ -1,0 +1,20 @@
+ON-CALL HANDOFF: checkout | week of 07-13 -> 07-20
+OUTGOING @david     INCOMING @james (was secondary: warm)
+
+SMOLDERING  fraud-api p99 creeping since Tue; below ticket
+            threshold but watch it: dep strip row 3.
+            Vendor status clean.
+OPEN ITEMS  INC-2214 followups: 2 of 5 done, links in channel
+            node-pool rebuild resumes Wed (platform team,
+            announced)
+CHANGES     big: payment-method flag ramps to 50% Mon
+            (wave schedule)
+            freeze: none. Break-glass used: 0
+PAGES       3 this week: 2 real (INC-2214 x2), 1 noisy ->
+            demoted in Fri alert review (rule PR linked)
+DRILLS DUE  restore drill freshness expires 07-24:
+            calendared Thu
+TOOLING     new runbook rev for evacuation (v14): read
+            before Wed
+HEALTH      night pages: 0. Load: normal.
+            Roster: @george out until 08-01

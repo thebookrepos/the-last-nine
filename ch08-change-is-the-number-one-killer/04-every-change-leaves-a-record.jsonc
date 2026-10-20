@@ -1,0 +1,13 @@
+// One event schema for every change class
+{
+  "ts": "2026-07-14T14:06:31Z",
+  // deploy | flag | config | migration | backfill | infra
+  "kind": "deploy.wave",
+  "service": "checkout",
+  "version": "2026.07.14-a41f",
+  "exposure": {"from": 0.10, "to": 0.25},
+  "actor": "pipeline/argo",  // or the human, for break-glass
+  // the undo, machine-readable
+  "revert": "rollouts undo checkout",
+  "ticket": "CHG-8841"
+}

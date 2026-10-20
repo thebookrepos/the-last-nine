@@ -1,0 +1,20 @@
+# deps/fraud-api.yaml : one dependency, fully described
+dependency: fraud-api
+vendor: FraudCo
+class: runtime-sync
+quadrant: entrenched-critical   # the classification below
+owner: team-payments            # a team, never a person
+tier_1_journeys: [checkout]     # where the ceiling math bites
+published_sla: 99.9
+observed_sli_90d: 99.87   # as seen from HERE, not their page
+controls:                 # timeout/breaker/fallback refs
+  timeout: 700ms
+  breaker: exp-114 tuned (min_volume scaled)
+  fallback: rules-based scoring, capacity-planned 100%
+  kill_switch: fraud.use_ml_scoring
+last_injected: 2026-06-30       # exp-131 PASS
+contract:
+  renewal: 2027-02-01
+  rate_limit: 5000 rps (raised for events)
+  exit_notes: >-
+    async escape built; no second vendor (decision CHG-2214)

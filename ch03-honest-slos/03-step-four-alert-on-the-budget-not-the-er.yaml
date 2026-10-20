@@ -1,0 +1,26 @@
+groups:
+  - name: checkout-burnrate
+    rules:
+      - alert: CheckoutFastBurn
+        expr: |
+          (1 - sli:checkout:ratio:rate1h)   > (14.4 * 0.001)
+          and
+          (1 - sli:checkout:ratio:rate5m)   > (14.4 * 0.001)
+        labels:
+          severity: page
+        annotations:
+          summary: >-
+            Checkout burning 30-day budget 14x too fast
+          runbook: >-
+            https://runbooks.internal/checkout/fast-burn
+
+      - alert: CheckoutSlowBurn
+        expr: |
+          (1 - sli:checkout:ratio:rate24h)  > (3 * 0.001)
+          and
+          (1 - sli:checkout:ratio:rate2h)   > (3 * 0.001)
+        labels:
+          severity: ticket
+        annotations:
+          summary: >-
+            Checkout leaking budget at 3x sustainable rate

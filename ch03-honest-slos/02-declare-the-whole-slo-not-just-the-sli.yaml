@@ -1,0 +1,25 @@
+apiVersion: openslo/v1
+kind: SLO
+metadata:
+  name: checkout-availability
+  labels:
+    team: payments
+    tier: "1"
+spec:
+  service: checkout
+  timeWindow:
+    - duration: 28d
+      isRolling: true
+  budgetingMethod: Occurrences
+  objectives:
+    - displayName: "Good checkout requests"
+      target: 0.999
+      ratioMetric:
+        good:
+          metricSource:
+            spec:
+              query: sli:checkout_requests:good:rate5m
+        total:
+          metricSource:
+            spec:
+              query: sli:checkout_requests:total:rate5m

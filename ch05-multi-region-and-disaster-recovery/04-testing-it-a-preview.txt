@@ -1,0 +1,21 @@
+DR RUNBOOK: checkout / region evacuation
+           rev 14, drilled 2026-06-11
+SCOPE      tier-1 checkout journey, regions us-west (A) /
+           us-east (B)
+OBJECTIVES RTO 15 min | RPO 0 acknowledged writes
+           drilled: 12 min / 0
+TRIGGER    ext probes: 3/3 vantage points failing checkout
+           in A >= 5 min AND region-A burn rate > 14x
+           (either alone: escalate, don't fire)
+AUTHORITY  Incident Commander on call may invoke without
+           further approval
+EXECUTE    run: evacuate-region A B
+           (pipeline, 7 gated steps)
+VERIFY     SLI dashboard "checkout-by-region" green in B;
+           probes 3/3
+COMMS      statuspage template T-3; exec page via IC checklist
+FAILBACK   separate runbook FB-checkout; earliest 72h after
+           A stable
+DO NOT     fail over for single-zone events; bypass capacity
+           gate; reverse replication before FB-checkout
+           step 2

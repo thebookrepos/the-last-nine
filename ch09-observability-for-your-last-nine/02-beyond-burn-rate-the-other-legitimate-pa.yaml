@@ -1,0 +1,35 @@
+groups:
+  - name: checkout-paging-surface
+    rules:
+      # External reality disagrees with us: probes are
+      # the senior signal
+      - alert: CheckoutProbesFailing
+        # fewer than 2 of 3 vantage points succeeding
+        expr: sum(probe_success{journey="checkout"}) < 2
+        for: 3m
+        labels: { severity: page }
+        annotations:
+          runbook: >-
+            https://runbooks.internal/checkout/probe-fail
+          note: >-
+            Fires even when internal SLIs look green: sees
+            DNS, CDN, TLS and the internet between users
+            and us.
+
+      # The async journey's symptom: freshness, not depth
+      - alert: WebhookDeliveryStale
+        expr: |
+          max(queue_oldest_message_age_seconds{
+            queue="webhooks"}) > 120
+        for: 5m
+        labels: { severity: page }
+
+      # Silence is a symptom: the dead-man's switch, inverted
+      - alert: CheckoutMetricsAbsent
+        expr: absent(sli:checkout:ratio:rate5m)
+        for: 2m
+        labels: { severity: page }
+        annotations:
+          note: >-
+            No data is not good news. Every SLO is fiction
+            while this fires.

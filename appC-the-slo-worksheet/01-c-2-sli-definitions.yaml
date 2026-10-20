@@ -1,0 +1,8 @@
+- record: sli:<journey>_requests:total:rate5m
+  expr: <total events expression>
+- record: sli:<journey>_requests:good:rate5m
+  # latency threshold must be a histogram bucket bound
+  expr: <good events expression>
+- record: sli:<journey>:ratio:rate5m
+  expr: sli:<journey>_requests:good:rate5m
+        / sli:<journey>_requests:total:rate5m

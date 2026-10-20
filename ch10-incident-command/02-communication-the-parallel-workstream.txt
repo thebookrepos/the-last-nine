@@ -1,0 +1,11 @@
+14:14  Investigating: Some customers are currently unable
+       to complete checkout. We are investigating and will
+       update by 14:35.
+
+14:31  Identified: We've identified the cause and are
+       rolling out a fix. Checkout is recovering; some
+       customers may still see errors. Next update by 15:00.
+
+14:52  Monitoring: Checkout is operating normally for all
+       customers as of 14:45. We're monitoring closely and
+       will post a final update within 24 hours.

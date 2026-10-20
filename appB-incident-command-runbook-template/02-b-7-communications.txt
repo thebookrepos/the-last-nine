@@ -1,0 +1,14 @@
+[investigating] Some customers are currently unable to
+<user-visible action>. We are investigating and will update
+by <time>.
+
+[identified] We've identified the cause and are rolling out
+a fix. <Journey> is recovering; some customers may still see
+errors. Next update by <time>.
+
+[monitoring] <Journey> is operating normally for all
+customers as of <time>. We're monitoring closely and will
+post a final update within 24 hours.
+
+[resolved] This incident is resolved. A summary will be
+published <within N days / at link>.

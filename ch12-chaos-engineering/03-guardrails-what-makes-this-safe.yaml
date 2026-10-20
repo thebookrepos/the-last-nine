@@ -1,0 +1,13 @@
+# The guardrail as code: Prometheus rule armed for the
+# experiment window
+- alert: ChaosExp114Abort
+  expr: |
+    sli:checkout:ratio:rate5m < 0.9990
+    and on() chaos_experiment_active{id="exp-114"} == 1
+  for: 1m
+  labels: { severity: page, action: chaos-abort }
+  annotations:
+    summary: "Exp-114 guardrail breach: auto-abort firing"
+    # The alert routes to the chaos controller's abort
+    # webhook AND pages the experiment owner: automation
+    # acts, humans verify.

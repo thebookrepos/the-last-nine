@@ -1,0 +1,10 @@
+NEAR MISS NM-2026-0412           filed by @david, 4 min
+WHAT ALMOST  node rotation with a bad image would have hit
+             the full us-west pool; caught because I
+             happened to be watching a pod's logs for
+             something unrelated
+CAUGHT BY    luck (that's the finding)
+FACTOR       rotations have no canary stage; nothing
+             systematic would have caught this
+ACTION?      none filed; flagging the pattern
+TAGS         platform, node-rotation, work-design

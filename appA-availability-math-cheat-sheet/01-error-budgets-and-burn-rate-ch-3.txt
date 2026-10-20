@@ -1,0 +1,6 @@
+Budget (events) = total events in window x (1 - SLO)
+Budget (time equivalent) = window minutes x (1 - SLO)
+Incident cost (%) = (rps x error_rate x duration_s)
+                    / budget_events x 100
+Burn rate = (observed error fraction) / (1 - SLO)
+Time to exhaustion = window / burn rate

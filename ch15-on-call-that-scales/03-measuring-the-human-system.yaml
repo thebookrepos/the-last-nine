@@ -1,0 +1,13 @@
+# Pages by hour-of-day, 90d: the night stripe, computed
+- record: oncall:pages_by_hour:90d
+  expr: sum by (hour) (count_over_time(pages_total[90d]))
+
+# The intervention threshold, as an alert on the alerting:
+- alert: PagerLoadUnsustainable
+  expr: sum(increase(pages_total{team="checkout"}[7d])) > 10
+  for: 2w                    # sustained, not one bad week
+  labels: { severity: ticket, audience: leadership }
+  annotations:
+    summary: >-
+      Checkout pager >10/wk for 2 weeks: on-call policy
+      triggers: pause features, fix the pager

@@ -1,0 +1,46 @@
+# Argo Rollouts: canary with automated analysis
+# and self-rollback
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata: { name: checkout }
+spec:
+  strategy:
+    canary:
+      steps:
+        - setWeight: 1
+        - pause: { duration: 15m }   # small, real, watched
+        - analysis:
+            templates:
+              - templateName: canary-vs-baseline
+        - setWeight: 10
+        - pause: { duration: 30m }
+        - analysis:
+            templates:
+              - templateName: canary-vs-baseline
+        - setWeight: 25
+        - pause: { duration: 1h }
+        - setWeight: 50
+        - pause: { duration: 2h }
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata: { name: canary-vs-baseline }
+spec:
+  metrics:
+    - name: error-rate-ratio
+      interval: 1m
+      failureLimit: 3        # 3 bad intervals = rollback
+      provider:
+        prometheus:
+          query: |
+            ( sum(rate(http_requests_total{job="checkout",
+                       version="canary", code=~"5.."}[5m]))
+              / sum(rate(http_requests_total{job="checkout",
+                       version="canary"}[5m])) )
+            /
+            ( sum(rate(http_requests_total{job="checkout",
+                       version="baseline", code=~"5.."}[5m]))
+              / sum(rate(http_requests_total{job="checkout",
+                       version="baseline"}[5m])) )
+      # canary may not double the baseline's error rate
+      successCondition: result[0] < 2.0

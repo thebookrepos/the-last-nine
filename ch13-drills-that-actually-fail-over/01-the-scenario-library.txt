@@ -1,0 +1,24 @@
+GAME DAY GD-2026-Q3: "gray tuesday"   facilitator: @john
+SAFETY WORD: "pineapple" (anyone, instantly pauses all
+             injection)
+GUARDRAILS: ChaosGD-* rules armed; abort < 99.90 SLI;
+            hard TTL 3h
+SCOPE: checkout + fraud path, canary cohort 5%,
+       cluster prod-w2 only
+
+T+0:00  INJECT fraud-api latency 4s @ cohort (spec exp-131)
+        EXPECT detection <3m, declaration, ops runs the
+        mitigation tree
+T+0:20  IF breaker+fallback handled cleanly and energy is
+        low: INJECT session-store packet loss 2% (the
+        second complication)
+        EXPECT dependency strip distinguishes TWO sick
+        rows; no conflation into one theory
+T+0:45  OBSERVER @george joins response channel as
+        "VP asking for ETA"
+        EXPECT comms lead absorbs; responders uninterrupted
+T+1:10  REMOVE injections in reverse order, announced by
+        facilitator
+        EXPECT close-out: criteria, degraded states retired
+T+1:30  DEBRIEF: timeline vs rubric; findings owned before
+        the room empties

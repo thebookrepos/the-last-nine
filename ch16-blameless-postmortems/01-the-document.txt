@@ -1,0 +1,67 @@
+POSTMORTEM INC-2214: checkout errors, us-west
+           status: reviewed
+DATE 2026-07-16    SEV 2    DURATION 41m (14:07-14:48)
+AUTHOR @james (ops lead)   REVIEWED 2026-07-21
+OWNER-OF-RECORD @john
+
+IMPACT      ~30% of checkout attempts failing in us-west
+            for 12 min, degraded 29 more. ~14,200 failed
+            attempts. Budget: 12% of month. No data loss.
+            2 enterprise tickets, no SLA breach.
+
+TIMELINE    (from the scribe record; times UTC-7)
+  13:40  checkout deploy completes fleet-wide
+         (unrelated, exonerated 14:12)
+  13:55  platform node-pool rotation begins, us-west
+  14:03  first elevated errors (visible in retrospect;
+         below alert bands)
+  14:07  burn-rate page fires (14x)
+                                [detect: 4m from 14:03]
+  14:09  SEV2 declared; roles assigned
+  14:11  change stream: two candidates; geography
+         implicates rotation
+  14:13  IC decision: pause rotation + drain zone
+                                [decide: 4m]
+  14:16  drain lands; 14:19 SLI burn 3x, probes 3/3
+                                [mitigate: 6m]
+  14:31  SLI baseline; 14:48 closed against criteria
+
+CONTRIBUTING FACTORS (not a chain; each stands alone)
+  F1 work design: node rotations lacked a canary stage;
+     the new image reached a full pool in one step
+     (change-gate gap, platform pipeline)
+  F2 information: per-zone SLI existed but the default
+     dashboard aggregated zones; the 14:03-14:07 window
+     was visible only in a view nobody had open
+  F3 defenses: kubelet misconfig passed node health
+     checks; readiness gates tested pod start, not
+     steady-state behavior (a lying probe)
+  F4 detection: burn thresholds tuned for fleet-wide
+     events; a one-zone 30% failure burned 4 minutes
+     before crossing them
+  F5 history: a similar rotation caused a near miss in
+     April; reported verbally, never filed; no calendar
+     existed to rhyme against
+
+WHAT WENT WELL (mandatory section, same rigor)
+  W1 change stream answered "what changed" in 2 minutes
+     (change stream paying off)
+  W2 drain mitigation worked exactly as drilled in May
+     (drill receipt)
+  W3 declaration was fast and unhesitating
+     (on-call culture, working)
+
+ACTION ITEMS (owner, priority, verify-by)
+  A1 platform: canary stage for node rotations
+     @george  P1  verify: re-run the rotation game day
+     with a poisoned image, Q3
+  A2 per-zone burn alerts for tier-1 journeys
+     @james  P1  verify: replay this incident's metrics;
+     alert must fire by 14:04
+  A3 node readiness gates exercise steady-state
+     @george  P2  verify: chaos injection of the same
+     kubelet misconfig
+  A4 near-miss lightweight template + prompt in the
+     handoff doc (F5's fix is cultural tooling)
+     @john  P2  verify: filing rate on the loop
+     dashboard, 2 quarters

@@ -1,0 +1,15 @@
+{
+  "ts": "2026-07-14T14:07:02.113Z",
+  "level": "error",
+  "service": "checkout",
+  "version": "2026.07.14-a41f",
+  // the descent's thread: from the edge, through every hop
+  "trace_id": "4bf92f35...",
+  "span_id": "00f067aa...",
+  "event": "fraud_call_failed",
+  "dependency": "fraud-api",
+  "error": "deadline_exceeded",
+  "elapsed_ms": 703,
+  "tenant": "t-2841",
+  "route": "/v1/checkout"
+}

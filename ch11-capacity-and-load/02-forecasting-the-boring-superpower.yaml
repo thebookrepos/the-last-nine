@@ -1,0 +1,16 @@
+# Recording + alert: when does peak utilization cross
+# the ceiling?
+- record: capacity:frontend_peak_util:daily
+  expr: max_over_time(pool_utilization{tier="frontend"}[1d])
+
+- alert: CapacityRunwayShort
+  expr: |
+    predict_linear(
+      capacity:frontend_peak_util:daily[30d], 86400 * 45)
+      > 0.70
+  labels: { severity: ticket }
+  annotations:
+    summary: >-
+      Frontend peak utilization projected past the 70%
+      ceiling within 45 days: provisioning lead time
+      is 30. Act now.

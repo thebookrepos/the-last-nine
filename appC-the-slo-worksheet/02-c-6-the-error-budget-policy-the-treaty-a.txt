@@ -1,0 +1,18 @@
+ERROR BUDGET POLICY: <journey>
+SLO          <n>% good events, rolling <28> days,
+             per sli:<journey>:ratio:rate5m
+ABOVE 50%    Normal operations. Risky changes allowed with
+             canary.
+BELOW 50%    Risky changes require a reviewed rollback plan.
+BELOW 25%    Feature deploys require <SRE/owner> sign-off.
+             Reliability work enters the current sprint.
+EXHAUSTED    Feature freeze on this journey's services.
+             Reliability and security fixes only. Freeze
+             lifts above 25%.
+OVERRIDE     Only <role> may override a freeze, in writing,
+             reported at <monthly review> with incident data
+             attached.
+DRILLS       Deliberate budget spend for ch 12-13 exercises
+             is permitted above 50% remaining.
+SIGNED       <VP Eng>  <Product Dir>  <SRE lead>   <date>
+REVIEW       Every 6 months, calendared: <date>

@@ -1,0 +1,14 @@
+Failover pipeline: evacuate-region(A -> B)
+                                 [pre-authorized: IC]
+  1. freeze deploys globally                  (auto)
+  2. verify B capacity >= 100% of A's live load
+                                 (gate: abort if not)
+  3. shift steering weights A:0 / B:100
+                               (auto, gradual 25%/min)
+  4. promote data layer in B      (auto via consensus)
+  5. verify tier-1 SLIs green in B from ext. probes
+                                               (gate)
+  6. scale B to full; disable A writes at the edge
+                                               (auto)
+  7. announce state; open failback tracking issue
+                                               (auto)

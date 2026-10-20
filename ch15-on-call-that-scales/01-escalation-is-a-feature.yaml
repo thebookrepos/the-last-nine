@@ -1,0 +1,21 @@
+# Escalation policy: checkout pager
+escalation:
+  - level: primary
+    targets: [ schedule:checkout-primary ]
+    # unacked pages move automatically: the timeout is the
+    # system's promise that a missed page can't die silently
+    ack_timeout: 5m
+  - level: secondary
+    targets: [ schedule:checkout-secondary ]
+    ack_timeout: 5m
+  - level: incident-command
+    # incident command engages
+    targets: [ schedule:ic-rotation ]
+    ack_timeout: 10m
+  - level: leadership
+    # staffing + comms, never hands
+    targets: [ eng-director ]
+severity_overrides:
+  # SEV1 pages primary AND IC in parallel: incident command
+  # shouldn't wait for two timeouts
+  sev1: { start_at: primary, also_notify: [ic-rotation] }

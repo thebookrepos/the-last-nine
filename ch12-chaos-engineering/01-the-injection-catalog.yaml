@@ -1,0 +1,22 @@
+# Envoy/Istio-style fault injection: the fraud API browns out
+# for 5% of checkout traffic. Tests: timeout sizing, breaker
+# thresholds, fallback activation: the full ch 7 chain.
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata: { name: fraud-brownout-exp-114 }
+spec:
+  hosts: [ fraud-api.internal ]
+  http:
+    - match: [ { sourceLabels: { app: checkout } } ]
+      fault:
+        delay:
+          percentage: { value: 5.0 }
+          # past the 700ms timeout on purpose: the
+          # hypothesis is that the timeout fires, the
+          # breaker opens at the threshold and the
+          # rules-based fallback serves: SLI stays green
+          fixedDelay: 6s
+        abort:
+          percentage: { value: 1.0 }
+          httpStatus: 503
+      route: [ { destination: { host: fraud-api.internal } } ]

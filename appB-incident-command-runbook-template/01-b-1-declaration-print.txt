@@ -1,0 +1,10 @@
+INCIDENT #<n> | SEV<x> (provisional)
+         declared <time> by <who/what>
+WHAT     <symptom in user terms: which journey, failing how>
+IMPACT   <best current estimate: % of what, where>
+IC       <name>    OPS <name>    COMMS <name or "IC for now">
+SCRIBE   auto + <name>
+STATE    investigating | mitigating | monitoring | resolved
+NEXT UPDATE <time, at most +10 min for SEV1-2>
+LINKS    dashboard: <go/…>   changes: <go/changes?window=2h>
+         this runbook: <go/…>   status page: <go/…>

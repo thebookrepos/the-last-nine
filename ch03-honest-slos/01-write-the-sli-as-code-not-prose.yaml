@@ -1,0 +1,23 @@
+groups:
+  - name: checkout-sli
+    interval: 30s
+    rules:
+      # Total events: all checkout requests at the edge
+      - record: sli:checkout_requests:total:rate5m
+        expr: |
+          sum(rate(http_requests_total{
+            job="edge", route="/v1/checkout"}[5m]))
+
+      # Good events: non-5xx AND under the latency threshold
+      - record: sli:checkout_requests:good:rate5m
+        expr: |
+          sum(rate(http_request_duration_seconds_bucket{
+            job="edge", route="/v1/checkout",
+            code!~"5..", le="2.0"}[5m]))
+
+      # The SLI itself: good / total
+      - record: sli:checkout:ratio:rate5m
+        expr: |
+          sli:checkout_requests:good:rate5m
+          /
+          sli:checkout_requests:total:rate5m

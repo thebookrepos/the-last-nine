@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkout
+spec:
+  replicas: 6
+  strategy:
+    rollingUpdate:
+      # never dip below capacity during deploys
+      maxUnavailable: 0
+      maxSurge: 2
+  template:
+    spec:
+      # Spread replicas across zones, hard requirement:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels: { app: checkout }
+      # And never co-locate two replicas on one node:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels: { app: checkout }
+      containers:
+        - name: checkout
+          readinessProbe:    # traffic only after truly ready
+            httpGet: { path: /ready, port: 8080 }
+            periodSeconds: 5
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: checkout-pdb
+spec:
+  minAvailable: 5     # node drains and upgrades respect this
+  selector:
+    matchLabels: { app: checkout }

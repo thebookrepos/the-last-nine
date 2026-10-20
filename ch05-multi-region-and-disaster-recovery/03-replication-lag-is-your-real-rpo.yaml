@@ -1,0 +1,23 @@
+groups:
+  - name: dr-rpo
+    rules:
+      - record: dr:replication_lag_seconds
+        expr: max(pg_replication_lag_seconds{dest_region="b"})
+
+      - alert: RPOBudgetAtRisk
+        # plan says RPO 60s
+        expr: dr:replication_lag_seconds > 30
+        for: 5m
+        labels: { severity: page }
+        annotations:
+          summary: >-
+            Region B lag {{ $value }}s; failover now would
+            lose more than half the stated RPO
+
+      - alert: RPOBreached
+        expr: dr:replication_lag_seconds > 60
+        for: 2m
+        labels: { severity: page }
+          # A region failure during this condition loses
+          # more data than the business signed off on.
+          # Treat as an incident now.

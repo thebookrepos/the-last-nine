@@ -1,0 +1,27 @@
+EXPERIMENT exp-114: fraud-api brownout, checkout cohort
+DATE/WINDOW   2026-07-21 14:00-15:00 (off-peak),
+              announced in #checkout
+OWNER         @david     OBSERVER @john
+BUDGET        est. <0.5% monthly
+STEADY STATE  sli:checkout:ratio:rate5m >= 0.9990
+              (30d baseline: 0.9994)
+HYPOTHESIS    With fraud-api at 6s latency for 5% of
+              checkout traffic: timeouts fire at 700ms;
+              breaker opens within 60s; rules fallback
+              serves; SLI stays >= 0.9990 throughout.
+              Mechanism under test: the timeout, breaker
+              and fallback chain, end to end.
+INJECTION     Istio fault: delay 6s @5%, abort 503 @1%
+              (spec attached)
+RADIUS        5% of checkout traffic, one cluster, 20 min max
+GUARDRAILS    auto-abort < 0.9990 (rule ChaosExp114Abort);
+              hard TTL 20m; manual kill:
+              `chaosctl stop exp-114`; scope: fraud-api only
+RESULT        [after] Hypothesis PARTIALLY falsified:
+              breaker opened at 94s, not 60: min-volume
+              threshold too high for the 5% cohort. SLI
+              dipped to 0.9991 (in band). Fallback correct.
+FINDINGS      F1: breaker min_volume must scale with cohort
+              size -> fix + re-run exp-114b. F2: fallback
+              activation metric missing from dependency
+              strip -> dashboard PR.

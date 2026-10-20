@@ -1,0 +1,25 @@
+DRILL REPORT DR-2026-Q2-checkout-evac
+             owner: @john    date: 06-11
+TYPE production failover
+SCENARIO region A evacuation (scripted)
+GATES all green (budget 61%, freshness current,
+      capacity audit 05-28)
+
+NUMBERS          objective  drilled  prior  trend
+  detect              3m       3m      4m   ok
+  decide              3m       2m      9m   fixed (Q1 F2)
+  execute             9m       7m     38m   fixed (Q1 F1)
+  total              15m      12m     51m   PASS
+  data divergence      0        0       0   ok
+  failback (T+3d)  gradual, 4h window, clean;
+                   reversal runbook v2 OK
+
+FINDINGS (by taxonomy)
+  F1 assumption: statuspage tooling auth'd only from region A
+     -> fix owned @george, re-verify in Q3 game day
+  F2 pleasant surprise: shed-by-tier absorbed the shift's
+     brief capacity dip untouched by design -> documented
+     in runbook
+
+NEXT  Q3 drill calendared 09-17; unannounced variant
+      proposed Q4 contingent on Q3 boring

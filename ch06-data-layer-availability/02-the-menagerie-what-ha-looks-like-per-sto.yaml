@@ -1,0 +1,26 @@
+# patroni.yml, the availability-relevant core
+scope: checkout-ledger
+# external DCS: etcd cluster, 5 nodes, 3 zones
+consensus:
+  etcd3:
+    hosts: >-
+      etcd-a:2379,etcd-b:2379,etcd-c:2379,
+      etcd-d:2379,etcd-e:2379
+bootstrap:
+  dcs:
+    ttl: 30          # leader lease; failover detection bound
+    loop_wait: 10
+    retry_timeout: 10
+    # bytes; candidates further behind are ineligible,
+    # which caps promotion RPO
+    maximum_lag_on_failover: 1048576
+    # semi-sync: acks require a standby
+    synchronous_mode: true
+    # true = block writes with no sync standby (RPO over
+    # availability); false = degrade (the asterisk).
+    # This line IS your stall policy.
+    synchronous_mode_strict: false
+watchdog:
+  # kernel watchdog: a wedged primary that can't renew
+  # its lease gets reset: fencing
+  mode: required

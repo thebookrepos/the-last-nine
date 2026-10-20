@@ -1,0 +1,11 @@
+INCIDENT #2214 | SEV2 (provisional)
+         declared 14:09 by burn-rate page
+WHAT     checkout error SLI burning at 14x; probes 2/3
+         failing us-west
+IMPACT   ~30% of checkout attempts failing, us-west users
+IC       @john         OPS @david          COMMS @IC-for-now
+SCRIBE   auto + @james
+STATE    investigating | mitigating | monitoring | resolved
+NEXT UPDATE 14:20
+DASH     go/checkout-slo   CHANGES go/changes?window=2h
+RUNBOOK  go/rb-checkout
